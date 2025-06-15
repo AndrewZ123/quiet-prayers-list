@@ -17,7 +17,7 @@ const Index = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { scheduleRandomReminders } = useNotifications();
-  const { notificationFrequency, customHours } = useSettings();
+  const { notificationFrequency, getHoursFromFrequency } = useSettings();
 
   // Initialize notifications when app loads
   useEffect(() => {
@@ -27,9 +27,9 @@ const Index = () => {
   // Update scheduled reminders when prayers or settings change
   useEffect(() => {
     if (prayers.length > 0) {
-      scheduleRandomReminders(prayers, notificationFrequency, customHours);
+      scheduleRandomReminders(prayers, notificationFrequency, getHoursFromFrequency);
     }
-  }, [prayers, notificationFrequency, customHours, scheduleRandomReminders]);
+  }, [prayers, notificationFrequency, scheduleRandomReminders, getHoursFromFrequency]);
 
   const handlePrayerClick = (prayer: PrayerRequest) => {
     setSelectedPrayer(prayer);

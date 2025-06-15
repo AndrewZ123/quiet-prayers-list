@@ -2,9 +2,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Settings, Bell, Clock } from 'lucide-react';
+import { Settings, Bell } from 'lucide-react';
 import { useSettings, NotificationFrequency } from '@/contexts/SettingsContext';
 
 interface SettingsModalProps {
@@ -15,16 +14,15 @@ interface SettingsModalProps {
 const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const { 
     notificationFrequency, 
-    customHours, 
-    setNotificationFrequency, 
-    setCustomHours 
+    setNotificationFrequency 
   } = useSettings();
 
   const frequencyOptions = [
-    { value: 'daily' as NotificationFrequency, label: 'Daily', description: 'Once per day' },
-    { value: 'twice-daily' as NotificationFrequency, label: 'Twice Daily', description: 'Every 12 hours' },
-    { value: 'weekly' as NotificationFrequency, label: 'Weekly', description: 'Once per week' },
-    { value: 'custom' as NotificationFrequency, label: 'Custom', description: 'Set your own interval' },
+    { value: '15-mins' as NotificationFrequency, label: '15 Minutes', description: 'Every 15 minutes' },
+    { value: '30-mins' as NotificationFrequency, label: '30 Minutes', description: 'Every 30 minutes' },
+    { value: '1-hour' as NotificationFrequency, label: '1 Hour', description: 'Every hour' },
+    { value: '3-hours' as NotificationFrequency, label: '3 Hours', description: 'Every 3 hours' },
+    { value: '6-hours' as NotificationFrequency, label: '6 Hours', description: 'Every 6 hours' },
   ];
 
   return (
@@ -66,31 +64,6 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                 </div>
               ))}
             </RadioGroup>
-
-            {/* Custom Hours Input */}
-            {notificationFrequency === 'custom' && (
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Clock size={14} className="text-indigo-600" />
-                  <Label htmlFor="custom-hours" className="text-sm font-medium text-slate-700">
-                    Hours between notifications
-                  </Label>
-                </div>
-                <Input
-                  id="custom-hours"
-                  type="number"
-                  min="1"
-                  max="168"
-                  value={customHours}
-                  onChange={(e) => setCustomHours(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="rounded-xl border-slate-200"
-                  placeholder="Enter hours (1-168)"
-                />
-                <p className="text-xs text-slate-500">
-                  Range: 1 hour to 1 week (168 hours)
-                </p>
-              </div>
-            )}
           </div>
 
           <div className="pt-4 border-t border-slate-200">

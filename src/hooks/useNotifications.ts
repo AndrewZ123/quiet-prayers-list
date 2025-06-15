@@ -56,7 +56,11 @@ export const useNotifications = () => {
     }
   };
 
-  const scheduleRandomReminders = async (prayers: any[], frequency: any, customHours?: number) => {
+  const scheduleRandomReminders = async (
+    prayers: any[], 
+    frequency: any, 
+    getHoursFromFrequency: (frequency: any) => number
+  ) => {
     if (!hasPermission) {
       toast({
         title: "Permission Required",
@@ -67,7 +71,7 @@ export const useNotifications = () => {
     }
 
     try {
-      await NotificationService.scheduleRandomPrayerReminders(prayers, frequency, customHours);
+      await NotificationService.scheduleRandomPrayerReminders(prayers, frequency, getHoursFromFrequency);
       
       toast({
         title: "Reminders Scheduled",

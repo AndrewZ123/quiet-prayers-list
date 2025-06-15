@@ -26,7 +26,7 @@ export class NotificationService {
   static async scheduleRandomPrayerReminders(
     prayers: PrayerRequest[],
     frequency: NotificationFrequency,
-    customHours?: number
+    getHoursFromFrequency: (frequency: NotificationFrequency) => number
   ) {
     if (!Capacitor.isNativePlatform()) {
       console.log('Notifications only work on native platforms');
@@ -45,25 +45,12 @@ export class NotificationService {
       // Cancel all existing prayer reminders first
       await this.cancelAllPrayerReminders();
 
-      // Calculate hours between notifications
-      let hoursInterval = 24; // default to daily
-      switch (frequency) {
-        case 'twice-daily':
-          hoursInterval = 12;
-          break;
-        case 'weekly':
-          hoursInterval = 168; // 24 * 7
-          break;
-        case 'custom':
-          hoursInterval = customHours || 24;
-          break;
-        default:
-          hoursInterval = 24;
-      }
+      // Get hours interval from frequency
+      const hoursInterval = getHoursFromFrequency(frequency);
 
-      // Schedule next 10 notifications (to cover a good period)
+      // Schedule next 20 notifications (to cover a good period for frequent intervals)
       const notifications = [];
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 1; i <= 20; i++) {
         // Randomly select a prayer
         const randomPrayer = activePrayers[Math.floor(Math.random() * activePrayers.length)];
         
@@ -153,8 +140,8 @@ export class NotificationService {
     }
 
     try {
-      // Cancel scheduled reminders (IDs 1001-1010)
-      const idsToCancel = Array.from({ length: 10 }, (_, i) => ({ id: 1001 + i }));
+      // Cancel scheduled reminders (IDs 1001-1020)
+      const idsToCancel = Array.from({ length: 20 }, (_, i) => ({ id: 1001 + i }));
       await LocalNotifications.cancel({ notifications: idsToCancel });
       console.log('Canceled all scheduled prayer reminders');
     } catch (error) {
