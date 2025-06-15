@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PrayerCard from '@/components/PrayerCard';
@@ -7,11 +7,17 @@ import PrayerModal from '@/components/PrayerModal';
 import AddPrayerModal from '@/components/AddPrayerModal';
 import { usePrayerStorage } from '@/hooks/usePrayerStorage';
 import { PrayerRequest } from '@/types/PrayerRequest';
+import { NotificationService } from '@/services/notificationService';
 
 const Index = () => {
   const { prayers, addPrayer, updatePrayer, incrementPrayerCount } = usePrayerStorage();
   const [selectedPrayer, setSelectedPrayer] = useState<PrayerRequest | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // Initialize notifications when app loads
+  useEffect(() => {
+    NotificationService.initialize();
+  }, []);
 
   const handlePrayerClick = (prayer: PrayerRequest) => {
     setSelectedPrayer(prayer);
