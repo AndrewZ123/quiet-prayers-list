@@ -56,6 +56,35 @@ export const useNotifications = () => {
     }
   };
 
+  const scheduleRandomReminders = async (prayers: any[], frequency: any, customHours?: number) => {
+    if (!hasPermission) {
+      toast({
+        title: "Permission Required",
+        description: "Please enable notifications in your device settings",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    try {
+      await NotificationService.scheduleRandomPrayerReminders(prayers, frequency, customHours);
+      
+      toast({
+        title: "Reminders Scheduled",
+        description: "Random prayer reminders have been set up",
+      });
+      
+      return true;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to schedule reminders",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   const cancelReminder = async (prayerId: string) => {
     try {
       await NotificationService.cancelReminder(prayerId);
@@ -69,6 +98,7 @@ export const useNotifications = () => {
   return {
     hasPermission,
     scheduleReminder,
+    scheduleRandomReminders,
     cancelReminder,
   };
 };

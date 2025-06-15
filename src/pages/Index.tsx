@@ -1,11 +1,13 @@
-
 import { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PrayerCard from '@/components/PrayerCard';
 import PrayerModal from '@/components/PrayerModal';
 import AddPrayerModal from '@/components/AddPrayerModal';
+import SettingsModal from '@/components/SettingsModal';
 import { usePrayerStorage } from '@/hooks/usePrayerStorage';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useSettings } from '@/contexts/SettingsContext';
 import { PrayerRequest } from '@/types/PrayerRequest';
 import { NotificationService } from '@/services/notificationService';
 
@@ -13,11 +15,21 @@ const Index = () => {
   const { prayers, addPrayer, updatePrayer, incrementPrayerCount } = usePrayerStorage();
   const [selectedPrayer, setSelectedPrayer] = useState<PrayerRequest | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { scheduleRandomReminders } = useNotifications();
+  const { notificationFrequency, customHours } = useSettings();
 
   // Initialize notifications when app loads
   useEffect(() => {
     NotificationService.initialize();
   }, []);
+
+  // Update scheduled reminders when prayers or settings change
+  useEffect(() => {
+    if (prayers.length > 0) {
+      scheduleRandomReminders(prayers, notificationFrequency, customHours);
+    }
+  }, [prayers, notificationFrequency, customHours, scheduleRandomReminders]);
 
   const handlePrayerClick = (prayer: PrayerRequest) => {
     setSelectedPrayer(prayer);
@@ -48,9 +60,19 @@ const Index = () => {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-slate-200">
         <div className="max-w-2xl mx-auto px-4 py-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Prompted</h1>
-            <p className="text-slate-600">Your prayer requests</p>
+          <div className="flex items-center justify-between">
+            <div className="text-center flex-1">
+              <h1 className="text-3xl font-bold text-slate-800 mb-2">Prompted</h1>
+              <p className="text-slate-600">Your prayer requests</p>
+            </div>
+            <Button
+              onClick={() => setIsSettingsOpen(true)}
+              variant="ghost"
+              size="sm"
+              className="rounded-full"
+            >
+              <Settings size={20} />
+            </Button>
           </div>
         </div>
       </div>
@@ -111,6 +133,11 @@ const Index = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleAddPrayer}
+      />
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );
